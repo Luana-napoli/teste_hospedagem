@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acesso à Câmera - Frontal e Traseira</title>
+    <style>
+        .video-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        video {
+            width: 80%;
+            max-width: 500px;
+            border: 2px solid #333;
+            margin-bottom: 10px;
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="video-container">
+        <video id="video" autoplay></video>
+        <div class="controls">
+            <button onclick="startCamera('user')">Câmera Frontal</button>
+            <button onclick="startCamera('environment')">Câmera Traseira</button>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        async function startCamera(facingMode) {
+            const video = document.getElementById('video');
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({
+                        video: { facingMode: facingMode }
+                    });
+                    video.srcObject = stream;
+                } catch (err) {
+                    console.error('Erro ao acessar a câmera:', err);
+                    alert('Erro ao acessar a câmera: ' + err.message);
+                }
+            } else {
+                alert('getUserMedia não é suportado no seu navegador.');
+            }
+        }
+
+        // Solicitar a lista de dispositivos de vídeo (câmeras) e atualizar as opções da câmera
+        async function getCameraSelection() {
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const videoDevices = devices.filter(device => device.kind === 'videoinput');
+            videoDevices.forEach(device => {
+                console.log(`Câmera encontrada: ${device.label} (ID: ${device.deviceId})`);
+            });
+        }
+
+        getCameraSelection();
+    </script>
+</body>
+</html>
